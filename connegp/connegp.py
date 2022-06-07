@@ -40,7 +40,9 @@ class Connegp(object):
         self._request = request
         self._profiles = profiles
         self._default_profile_token = default_profile_token
-
+        self.profiles_requested = ""
+        self.mediatypes_requested = ""
+        
         self.profile = self._get_profile()
         self.mediatype = self._get_mediatype()
 
@@ -173,20 +175,20 @@ class Connegp(object):
 
     def _get_profile(self) -> str:
         # if we get a profile from QSA, use that
-        profiles_requested = self._parse_profiles_from_qsa()
+        self.profiles_requested = self._parse_profiles_from_qsa()
 
         # if not, try Accept-Profile header
-        if profiles_requested is None:
-            profiles_requested = self._parse_profiles_from_accept_profile_header()
+        if self.profiles_requested is None:
+            self.profiles_requested = self._parse_profiles_from_accept_profile_header()
 
         # if still no profile, return default profile token
-        if profiles_requested is None:
+        if self.profiles_requested is None:
             return self._default_profile_token
 
         # if we have a result from QSA or accept-profile, got through each in order and see if there's an available
         # profile for that token, return first one
         profiles_available = self._get_available_profiles()
-        for profile in profiles_requested:
+        for profile in self.profiles_requested:
             for k, v in profiles_available.items():
                 if profile == v:
                     return v  # return the profile token
@@ -234,18 +236,18 @@ class Connegp(object):
         return self._profiles[self.profile].mediatypes
 
     def _get_mediatype(self) -> str:
-        mediatypes_requested = self._parse_mediatypes_from_qsa()
+        self.mediatypes_requested = self._parse_mediatypes_from_qsa()
 
-        if mediatypes_requested is None:
-            mediatypes_requested = self._parse_mediatypes_from_accept_header()
+        if self.mediatypes_requested is None:
+            self.mediatypes_requested = self._parse_mediatypes_from_accept_header()
 
         # no Media Types requested so return default
-        if mediatypes_requested is None:
+        if self.mediatypes_requested is None:
             return self._profiles[self.profile].default_mediatype
 
         # iterate through requested Media Types until a valid one is found
         mediatypes_available = self._get_available_mediatypes()
-        for mediatype in mediatypes_requested:
+        for mediatype in self.mediatypes_requested:
             if mediatype in mediatypes_available:
                 return mediatype
 
