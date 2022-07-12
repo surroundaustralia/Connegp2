@@ -6,6 +6,7 @@ MEDIATYPE_NAMES = {
     "application/json": "JSON",
     "application/n-triples": "N-triples",
     "application/vnd.geo+json": "GeoJSON",
+    "text/csv": "CSV",
 }
 
 RDF_MEDIATYPES = [
